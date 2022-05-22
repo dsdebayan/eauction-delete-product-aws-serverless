@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  DeleteProduct
+
+  Sample SAM Template for DeleteProduct
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+#  ProductDeletedTopic:
+#    Type: AWS::SNS:Topic
+  CheckHealthFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: DeleteProductFunction
+      Handler: com.hackfse.eauction.DeleteProduct::checkHealth
+      Runtime: java11
+      MemorySize: 512
+#      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+#        Variables:
+#          WAREHOUSE_URL: http://Eauctionbackend-env.eba-4dur53gr.ap-south-1.elasticbeanstalk.com/e-auction/api/v1/seller/delete/
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello
+            Method: get
+
+  DeleteProductFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: DeleteProductFunction
+      Handler: com.hackfse.eauction.DeleteProduct::deleteProduct
+#      Policies:
+#        - AmazonSNSFullAccess
+
+      Runtime: java11
+      MemorySize: 512
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          WAREHOUSE_URL: http://Eauctionbackend-env.eba-4dur53gr.ap-south-1.elasticbeanstalk.com/e-auction/api/v1/seller/delete/
+#          PRODUCT_DELETED_TOPIC: !Ref ProductDeletedTopic
+      Events:
+        DeleteProduct:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /e-auction/api/v1/seller/delete/{productId}
+            Method: delete
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  CheckHealthApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  CheckHealthFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt CheckHealthFunction.Arn
+  CheckHealthFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt CheckHealthFunctionRole.Arn
+
+  DeleteProductApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  DeleteProductFunction:
+      Description: "Hello World Lambda Function ARN"
+      Value: !GetAtt DeleteProductFunction.Arn
+  DeleteProductFunctionIamRole:
+      Description: "Implicit IAM Role created for Hello World function"
+      Value: !GetAtt DeleteProductFunctionRole.Arn

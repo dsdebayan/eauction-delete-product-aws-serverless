@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'DeleteProduct
+
+  Sample SAM Template for DeleteProduct
+
+  '
+Globals:
+  Function:
+    Timeout: 20
+Resources:
+  CheckHealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: CheckHealthFunction
+      Handler: com.hackfse.eauction.DeleteProduct::checkHealth
+      Runtime: java11
+      MemorySize: 512
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+    Metadata:
+      SamResourceId: CheckHealthFunction
+  DeleteProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DeleteProductFunction
+      Handler: com.hackfse.eauction.DeleteProduct::deleteProduct
+      Runtime: java11
+      MemorySize: 512
+      Environment:
+        Variables:
+          WAREHOUSE_URL: http://Eauctionbackend-env.eba-4dur53gr.ap-south-1.elasticbeanstalk.com/e-auction/api/v1/seller/delete/
+      Events:
+        DeleteProduct:
+          Type: Api
+          Properties:
+            Path: /e-auction/api/v1/seller/delete/{productId}
+            Method: delete
+    Metadata:
+      SamResourceId: DeleteProductFunction
+Outputs:
+  CheckHealthApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  CheckHealthFunction:
+    Description: Hello World Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CheckHealthFunction
+      - Arn
+  CheckHealthFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - CheckHealthFunctionRole
+      - Arn
+  DeleteProductApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  DeleteProductFunction:
+    Description: Hello World Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - DeleteProductFunction
+      - Arn
+  DeleteProductFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - DeleteProductFunctionRole
+      - Arn
