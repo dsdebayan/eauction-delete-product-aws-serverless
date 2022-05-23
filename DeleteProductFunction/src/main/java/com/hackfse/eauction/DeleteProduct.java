@@ -15,7 +15,7 @@ import java.net.http.HttpResponse;
 
 public class DeleteProduct {
 
-   // AmazonSNS sns = AmazonSNSClientBuilder .defaultClient();
+    AmazonSNS sns = AmazonSNSClientBuilder .defaultClient();
 
     public APIGatewayProxyResponseEvent checkHealth(APIGatewayProxyRequestEvent request){
         return  new APIGatewayProxyResponseEvent().withStatusCode(200).withBody("Deleted");
@@ -51,7 +51,10 @@ public class DeleteProduct {
 
         logger.info("message : " + message);
 
-   //     sns.publish(System.getenv("PRODUCT_DELETED_TOPIC"), message);
+     if (response.body().toString().isEmpty()) {
+         logger.info("published to topic : " + message);
+         sns.publish("arn:aws:sns:ap-south-1:734055333413:PRODUCT_DELETED_TOPIC", message);
+     }
 
 // the response:
 
